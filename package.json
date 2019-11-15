@@ -68,6 +68,7 @@
     "test": "grunt test",
     "travis": "grunt",
     "dev": "grunt watch",
-    "build": "grunt build"
+    "build": "grunt build",
+    "release": "node ./scripts/tag-and-release.js"
   }
 }
