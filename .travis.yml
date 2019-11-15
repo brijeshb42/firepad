@@ -22,9 +22,10 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
-  - provider: releases
-    token: "$GITHUB_TOKEN"
-    file: "firepad-x*.tgz"
-    skip_cleanup: true
-    on:
-      branch: master
+  # - provider: releases
+  #   api_key: "$GITHUB_TOKEN"
+  #   file_glob: true
+  #   file: "firepad-x*.tgz"
+  #   skip_cleanup: true
+  #   on:
+  #     branch: master

@@ -65,7 +65,7 @@ module.exports = function (grunt) {
           "lib/annotation-list.js",
           "lib/cursor.js",
           "lib/firebase-adapter.js",
-          "lib/rich-text-toolbar.js",
+          // "lib/rich-text-toolbar.js",
           "lib/wrapped-operation.js",
           "lib/undo-manager.js",
           "lib/client.js",
@@ -75,8 +75,8 @@ module.exports = function (grunt) {
           "lib/constants.js",
           "lib/entity-manager.js",
           "lib/entity.js",
-          "lib/rich-text-codemirror.js",
-          "lib/rich-text-codemirror-adapter.js",
+          // "lib/rich-text-codemirror.js",
+          // "lib/rich-text-codemirror-adapter.js",
           "lib/formatting.js",
           "lib/text.js",
           "lib/line-formatting.js",
@@ -84,7 +84,7 @@ module.exports = function (grunt) {
           "lib/parse-html.js",
           "lib/serialize-html.js",
           "lib/text-pieces-to-inserts.js",
-          "lib/headless.js",
+          // "lib/headless.js",
           "lib/firepad.js"
         ],
         "dest": "dist/firepad.js"
