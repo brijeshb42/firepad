@@ -16,9 +16,16 @@ script:
 after_script:
 - cat ./test/coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 deploy:
-  provider: npm
-  script: "npm publish && npm run release"
-  email: "$NPM_EMAIL"
-  api_key: "$NPM_TOKEN"
-  on:
-    branch: master
+  - provider: npm
+    email: "$NPM_EMAIL"
+    api_key: "$NPM_TOKEN"
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: releases
+    api_key: "$GITHUB_TOKEN"
+    file_glob: true
+    file: "firepad-x*.tgz"
+    skip_cleanup: true
+    on:
+      branch: master
