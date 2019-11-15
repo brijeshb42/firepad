@@ -27,8 +27,8 @@ module.exports = function (grunt) {
         options: {
           bare: true,           // Skip surrounding IIFE in compiled output.
           transpile: {
-            presets: ['@babel/preset-env'],      // Pass the output through babel
-          }
+            presets: ['@babel/preset-env'],
+          },
         }
       }
     },
@@ -65,7 +65,7 @@ module.exports = function (grunt) {
           "lib/annotation-list.js",
           "lib/cursor.js",
           "lib/firebase-adapter.js",
-          // "lib/rich-text-toolbar.js",
+          "lib/rich-text-toolbar.js",
           "lib/wrapped-operation.js",
           "lib/undo-manager.js",
           "lib/client.js",
@@ -75,8 +75,8 @@ module.exports = function (grunt) {
           "lib/constants.js",
           "lib/entity-manager.js",
           "lib/entity.js",
-          // "lib/rich-text-codemirror.js",
-          // "lib/rich-text-codemirror-adapter.js",
+          "lib/rich-text-codemirror.js",
+          "lib/rich-text-codemirror-adapter.js",
           "lib/formatting.js",
           "lib/text.js",
           "lib/line-formatting.js",
@@ -84,7 +84,7 @@ module.exports = function (grunt) {
           "lib/parse-html.js",
           "lib/serialize-html.js",
           "lib/text-pieces-to-inserts.js",
-          // "lib/headless.js",
+          "lib/headless.js",
           "lib/firepad.js"
         ],
         "dest": "dist/firepad.js"
@@ -97,6 +97,15 @@ module.exports = function (grunt) {
       "firepad-min-js": {
         src: "dist/firepad.js",
         dest: "dist/firepad.min.js"
+      }
+    },
+    babel: {
+      options: {
+        presets: ['@babel/preset-env'],
+      },
+      "firepad-transpiled": {
+        src: 'dist/firepad.js',
+        dest: 'dist/firepad.js',
       }
     },
     copy: {
@@ -137,9 +146,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-babel');
 
   // Tasks
   grunt.registerTask('test', ['karma:unit']);
-  grunt.registerTask('build', ['coffeelint', 'coffee', 'concat', 'uglify', 'copy'])
+  grunt.registerTask('build', ['coffeelint', 'coffee', 'concat', 'babel', 'uglify', 'copy'])
   grunt.registerTask('default', ['build', 'test']);
 };
