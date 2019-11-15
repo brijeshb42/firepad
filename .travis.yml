@@ -23,8 +23,7 @@ deploy:
     on:
       branch: master
   - provider: releases
-    api_key: "$GITHUB_TOKEN"
-    file_glob: true
+    token: "$GITHUB_TOKEN"
     file: "firepad-x*.tgz"
     skip_cleanup: true
     on:
