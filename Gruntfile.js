@@ -27,7 +27,7 @@ module.exports = function (grunt) {
         options: {
           bare: true,           // Skip surrounding IIFE in compiled output.
           transpile: {
-            presets: ['@babel/preset-env'],
+            presets: [['@babel/preset-env', { modules: false }]],
           },
         }
       }
@@ -101,7 +101,7 @@ module.exports = function (grunt) {
     },
     babel: {
       options: {
-        presets: ['@babel/preset-env'],
+        presets: [['@babel/preset-env', { modules: false }]],
       },
       "firepad-transpiled": {
         src: 'dist/firepad.js',
