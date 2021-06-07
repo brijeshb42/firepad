@@ -68,13 +68,15 @@ export class UndoManager implements IUndoManager {
   /**
    * Default value `(50)` for maximum number of operation to hold in Undo/Redo stack
    */
-  static readonly MAX_ITEM_IN_STACK: number = 50;
+  private static readonly MAX_ITEM_IN_STACK: number = 50;
 
   /**
    * Creates an Undo/Redo Stack manager
    * @param maxItems - Maximum number of operation to hold in Undo/Redo stack (optional, defaults to `50`)
    */
   constructor(maxItems: number = UndoManager.MAX_ITEM_IN_STACK) {
+    Utils.validateGreater(maxItems, 0);
+
     this._maxItems = maxItems;
 
     this._undoStack = [];
@@ -94,27 +96,34 @@ export class UndoManager implements IUndoManager {
     this._redoStack = [];
   }
 
-  protected _addOnNormalState(operation: IWrappedOperation, compose: boolean) {
+  protected _addOnNormalState(
+    operation: IWrappedOperation,
+    compose: boolean
+  ): void {
+    let toPushOperation: IWrappedOperation = operation;
+
     if (this._compose && compose && this._undoStack.length > 0) {
-      this._undoStack.push(
-        operation.compose(this._undoStack.pop()!) as IWrappedOperation
-      );
-    } else {
-      this._undoStack.push(operation);
-      if (this._undoStack.length > this._maxItems) {
-        this._undoStack.shift();
-      }
+      toPushOperation = operation.compose(
+        this._undoStack.pop()!
+      ) as IWrappedOperation;
     }
+
+    this._undoStack.push(toPushOperation);
+
+    if (this._undoStack.length > this._maxItems) {
+      this._undoStack.shift();
+    }
+
     this._compose = true;
     this._redoStack = [];
   }
 
-  protected _addOnUndoingState(operation: IWrappedOperation) {
+  protected _addOnUndoingState(operation: IWrappedOperation): void {
     this._redoStack.push(operation);
     this._compose = false;
   }
 
-  protected _addOnRedoingState(operation: IWrappedOperation) {
+  protected _addOnRedoingState(operation: IWrappedOperation): void {
     this._undoStack.push(operation);
     this._compose = true;
   }
@@ -122,17 +131,16 @@ export class UndoManager implements IUndoManager {
   add(operation: ITextOperation, compose: boolean = false): void {
     switch (this._state) {
       case UndoManagerState.Undoing: {
-        this._addOnUndoingState(operation as IWrappedOperation);
-        break;
+        return this._addOnUndoingState(operation as IWrappedOperation);
       }
       case UndoManagerState.Redoing: {
-        this._addOnRedoingState(operation as IWrappedOperation);
-        break;
+        return this._addOnRedoingState(operation as IWrappedOperation);
       }
-      default: {
-        this._addOnNormalState(operation as IWrappedOperation, compose);
-        break;
+      case UndoManagerState.Normal: {
+        return this._addOnNormalState(operation as IWrappedOperation, compose);
       }
+      default:
+        break;
     }
   }
 

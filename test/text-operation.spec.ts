@@ -28,7 +28,7 @@ describe("Text Operation", () => {
   });
 
   describe("#equals", () => {
-    it("should return true if two operation makes same effect", () => {
+    it("should return true if two operation makes the same effect", () => {
       const retainCount = 32,
         deleteCount = 2,
         insertText = "Hello";
@@ -231,68 +231,6 @@ describe("Text Operation", () => {
     });
   });
 
-  describe("#toString", () => {
-    it("should pretty print a text operation", () => {
-      const retainCount = 32,
-        deleteCount = 2,
-        insertText = "Hello";
-      const operation = new TextOperation()
-        .retain(retainCount, null)
-        .insert(insertText, null)
-        .delete(deleteCount);
-      const opString = `Retain ${retainCount}, Insert "${insertText}", Delete ${deleteCount}`;
-      expect(operation.toString()).toEqual(opString);
-    });
-  });
-
-  describe("#toJSON", () => {
-    it("should convert text operation into JSON representation", () => {
-      const retainCount = 32,
-        deleteCount = 2,
-        insertText = "Hello";
-      const operation = new TextOperation()
-        .retain(retainCount, null)
-        .insert(insertText, null)
-        .delete(deleteCount);
-      const ops = [retainCount, insertText, -deleteCount];
-      expect(operation.toJSON()).toEqual(ops);
-    });
-
-    it("should persist attributes of ops", () => {
-      const retainCount = 32,
-        deleteCount = 2,
-        insertText = "Hello",
-        attrs = { attr: true };
-      const operation = new TextOperation()
-        .retain(retainCount, attrs)
-        .insert(insertText, null)
-        .delete(deleteCount);
-      const ops = [attrs, retainCount, insertText, -deleteCount];
-      expect(operation.toJSON()).toEqual(ops);
-    });
-
-    it("should return 0 character retained if no ops", () => {
-      const operation = new TextOperation();
-      const ops = [0];
-      expect(operation.toJSON()).toEqual(ops);
-    });
-  });
-
-  describe(".fromJSON", () => {
-    it("should convert JSON representation into text operation", () => {
-      const retainCount = 32,
-        deleteCount = 2,
-        insertText = "Hello",
-        attrs = { attr: true };
-      const operation = new TextOperation()
-        .retain(retainCount, attrs)
-        .insert(insertText, null)
-        .delete(deleteCount);
-      const ops = [attrs, retainCount, insertText, -deleteCount];
-      expect(TextOperation.fromJSON(ops)).toEqual(operation);
-    });
-  });
-
   describe("#apply", () => {
     it("should apply a text operation to given text content", () => {
       const content = "Hello World";
@@ -345,8 +283,26 @@ describe("Text Operation", () => {
     });
   });
 
+  describe("#canMergeWith", () => {
+    it("should return True if two operation can be applied sequentially", () => {
+      const operation = new TextOperation().retain(6, null).insert("Me", null);
+      const otherOperation = new TextOperation()
+        .retain(8, null)
+        .insert("!", null);
+      expect(operation.canMergeWith(otherOperation)).toEqual(true);
+    });
+
+    it("should return False if two operation can not be applied sequentially", () => {
+      const operation = new TextOperation().retain(6, null).insert("Me", null);
+      const otherOperation = new TextOperation()
+        .retain(6, null)
+        .insert("!", null);
+      expect(operation.canMergeWith(otherOperation)).toEqual(false);
+    });
+  });
+
   describe("#compose", () => {
-    it("should return a text operation that produces same effect as two individual sequentially applied", () => {
+    it("should return a text operation that produces same effect as two individual ones applied sequentially", () => {
       const content = "Hello World";
       const operation = new TextOperation()
         .retain(6, null)
@@ -484,13 +440,65 @@ describe("Text Operation", () => {
     });
   });
 
-  describe("#canMergeWith", () => {
-    it("should return True if two operation can be applied sequentially", () => {
-      const operation = new TextOperation().retain(6, null).insert("Me", null);
-      const otherOperation = new TextOperation()
-        .retain(8, null)
-        .insert("!", null);
-      expect(operation.canMergeWith(otherOperation)).toEqual(true);
+  describe("#toString", () => {
+    it("should pretty print a text operation", () => {
+      const retainCount = 32,
+        deleteCount = 2,
+        insertText = "Hello";
+      const operation = new TextOperation()
+        .retain(retainCount, null)
+        .insert(insertText, null)
+        .delete(deleteCount);
+      const opString = `Retain ${retainCount}, Insert "${insertText}", Delete ${deleteCount}`;
+      expect(operation.toString()).toEqual(opString);
+    });
+  });
+
+  describe("#toJSON", () => {
+    it("should convert text operation into JSON representation", () => {
+      const retainCount = 32,
+        deleteCount = 2,
+        insertText = "Hello";
+      const operation = new TextOperation()
+        .retain(retainCount, null)
+        .insert(insertText, null)
+        .delete(deleteCount);
+      const ops = [retainCount, insertText, -deleteCount];
+      expect(operation.toJSON()).toEqual(ops);
+    });
+
+    it("should persist attributes of ops", () => {
+      const retainCount = 32,
+        deleteCount = 2,
+        insertText = "Hello",
+        attrs = { attr: true };
+      const operation = new TextOperation()
+        .retain(retainCount, attrs)
+        .insert(insertText, null)
+        .delete(deleteCount);
+      const ops = [attrs, retainCount, insertText, -deleteCount];
+      expect(operation.toJSON()).toEqual(ops);
+    });
+
+    it("should return 0 character retained if no ops", () => {
+      const operation = new TextOperation();
+      const ops = [0];
+      expect(operation.toJSON()).toEqual(ops);
+    });
+  });
+
+  describe(".fromJSON", () => {
+    it("should convert JSON representation into text operation", () => {
+      const retainCount = 32,
+        deleteCount = 2,
+        insertText = "Hello",
+        attrs = { attr: true };
+      const operation = new TextOperation()
+        .retain(retainCount, attrs)
+        .insert(insertText, null)
+        .delete(deleteCount);
+      const ops = [attrs, retainCount, insertText, -deleteCount];
+      expect(TextOperation.fromJSON(ops)).toEqual(operation);
     });
   });
 });

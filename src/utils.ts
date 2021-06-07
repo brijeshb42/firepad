@@ -160,6 +160,20 @@ export function validateLessOrEqual(
 }
 
 /**
+ * Validates if the incoming first parameter Greater Than the incoming second parameter.
+ * @param first - First Parameter for validation.
+ * @param second - Second Parameter for validation.
+ * @param err - Custom Error Message.
+ */
+export function validateGreater(first: number, second: number, err?: string) {
+  if (first <= second) {
+    throw new ValidationError(
+      err || `Expected ${first} to be greater than ${second}.`
+    );
+  }
+}
+
+/**
  * Validates if the incoming parameter is True.
  * @param arg - Parameter for validation.
  * @param err - Custom Error Message.

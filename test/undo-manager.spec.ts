@@ -61,6 +61,32 @@ describe("Undo Manager", () => {
       });
       expect(undoManager.canUndo()).toEqual(true);
     });
+
+    it("should compose with last operation if exists and compose set to true", () => {
+      const nextOperation = wrappedOperation.clone();
+      undoManager = new UndoManager(1);
+      undoManager.add(wrappedOperation);
+      undoManager.add(nextOperation, true);
+      undoManager.performUndo(() => {
+        /** Empty Callback */
+      });
+      expect(undoManager.canUndo()).toEqual(false);
+    });
+
+    it("should not add more operations than the limit given", () => {
+      undoManager = new UndoManager(1);
+      undoManager.add(wrappedOperation);
+      undoManager.add(wrappedOperation.invert("Test"));
+      undoManager.performUndo(() => {
+        /** Empty Callback */
+      });
+      expect(undoManager.canUndo()).toEqual(false);
+    });
+
+    it("should throw error if the limit is set to zero", () => {
+      const fn = () => new UndoManager(0);
+      expect(fn).toThrowError();
+    });
   });
 
   describe("#last", () => {
@@ -86,6 +112,19 @@ describe("Undo Manager", () => {
       undoManager.add(wrappedOperation);
       undoManager.performUndo(() => {
         expect(undoManager.isUndoing()).toEqual(true);
+        done();
+      });
+    });
+  });
+
+  describe("#isRedoing", () => {
+    it("should return true if the manager is redoing an operation", (done) => {
+      undoManager.add(wrappedOperation);
+      undoManager.performUndo(() => {
+        undoManager.add(wrappedOperation.invert(""));
+      });
+      undoManager.performRedo(() => {
+        expect(undoManager.isRedoing()).toEqual(true);
         done();
       });
     });

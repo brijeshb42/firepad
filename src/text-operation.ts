@@ -293,63 +293,6 @@ export class TextOperation implements ITextOperation {
     return clone;
   }
 
-  toString(): string {
-    return this._ops.map((op) => op.toString()).join(", ");
-  }
-
-  toJSON(): TextOperationType {
-    const ops: TextOperationType = [];
-
-    for (const op of this._ops) {
-      if (!op.hasEmptyAttributes()) {
-        ops.push(op.attributes!);
-      }
-
-      ops.push(op.valueOf()!);
-    }
-
-    // Empty array will be treated as null by Firebase.
-    if (ops.length === 0) {
-      ops.push(0);
-    }
-
-    return ops;
-  }
-
-  /**
-   * Converts JSON representation of TextOperation into TextOperation object.
-   */
-  static fromJSON(ops: TextOperationType): TextOperation {
-    const t = new TextOperation();
-    let attributes: ITextOpAttributes = {};
-
-    for (const op of ops) {
-      if (typeof op === "object") {
-        attributes = op;
-        continue;
-      }
-
-      if (typeof op === "string") {
-        t.insert(op, attributes);
-        attributes = {};
-        continue;
-      }
-
-      Utils.validateInteger(op);
-
-      if (op < 0) {
-        t.delete(-op);
-        attributes = {};
-        continue;
-      }
-
-      t.retain(op, attributes);
-      attributes = {};
-    }
-
-    return t;
-  }
-
   apply(
     prevContent: string,
     prevAttributes: ITextOpAttributes[] = [],
@@ -461,6 +404,10 @@ export class TextOperation implements ITextOperation {
     return inverse;
   }
 
+  canMergeWith(other: TextOperation): boolean {
+    return this._targetLength === other._baseLength;
+  }
+
   protected static _nextTextOp(
     opIterator: IterableIterator<[number, ITextOp]>
   ): ITextOp | null {
@@ -469,9 +416,8 @@ export class TextOperation implements ITextOperation {
   }
 
   compose(otherOperation: TextOperation): TextOperation {
-    Utils.validateEquality(
-      this._targetLength,
-      otherOperation._baseLength,
+    Utils.validateTruth(
+      this.canMergeWith(otherOperation),
       "The base length of the second operation has to be the target length of the first operation"
     );
 
@@ -951,7 +897,60 @@ export class TextOperation implements ITextOperation {
     return TextOperation.transform(this, operation);
   }
 
-  canMergeWith(other: TextOperation): boolean {
-    return this._targetLength === other._baseLength;
+  toString(): string {
+    return this._ops.map((op) => op.toString()).join(", ");
+  }
+
+  toJSON(): TextOperationType {
+    const ops: TextOperationType = [];
+
+    for (const op of this._ops) {
+      if (!op.hasEmptyAttributes()) {
+        ops.push(op.attributes!);
+      }
+
+      ops.push(op.valueOf()!);
+    }
+
+    // Empty array will be treated as null by Firebase.
+    if (ops.length === 0) {
+      ops.push(0);
+    }
+
+    return ops;
+  }
+
+  /**
+   * Converts JSON representation of TextOperation into TextOperation object.
+   */
+  static fromJSON(ops: TextOperationType): TextOperation {
+    const t = new TextOperation();
+    let attributes: ITextOpAttributes = {};
+
+    for (const op of ops) {
+      if (typeof op === "object") {
+        attributes = op;
+        continue;
+      }
+
+      if (typeof op === "string") {
+        t.insert(op, attributes);
+        attributes = {};
+        continue;
+      }
+
+      Utils.validateInteger(op);
+
+      if (op < 0) {
+        t.delete(-op);
+        attributes = {};
+        continue;
+      }
+
+      t.retain(op, attributes);
+      attributes = {};
+    }
+
+    return t;
   }
 }

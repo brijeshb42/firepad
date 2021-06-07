@@ -39,7 +39,6 @@ export class MonacoAdapter implements IEditorAdapter {
   protected _lastDocLines: string[];
   protected _lastCursorRange: monaco.Selection | null;
   protected _emitter: IEventEmitter | null;
-  protected _cursorTimeout: NodeJS.Timeout | null;
   protected _undoCallback: UndoRedoCallbackType | null;
   protected _redoCallback: UndoRedoCallbackType | null;
   protected _originalUndo: UndoRedoCallbackType | null;
@@ -67,7 +66,6 @@ export class MonacoAdapter implements IEditorAdapter {
     this._undoCallback = null;
     this._originalRedo = null;
     this._originalUndo = null;
-    this._cursorTimeout = null;
     this._ignoreChanges = false;
 
     if (!avoidListeners) {
@@ -114,11 +112,6 @@ export class MonacoAdapter implements IEditorAdapter {
     this._remoteCursors.clear();
     this._disposables.forEach((disposable) => disposable.dispose());
     this._disposables.splice(0, this._disposables.length);
-
-    if (this._cursorTimeout) {
-      clearTimeout(this._cursorTimeout);
-      this._cursorTimeout = null;
-    }
 
     if (this._emitter) {
       this._emitter.dispose();
@@ -585,9 +578,7 @@ export class MonacoAdapter implements IEditorAdapter {
       return;
     }
 
-    this._cursorTimeout = setTimeout(() => {
-      return this._trigger(EditorAdapterEvent.CursorActivity);
-    }, 1);
+    this._trigger(EditorAdapterEvent.CursorActivity);
   }
 
   protected _onChange(

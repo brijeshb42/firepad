@@ -167,21 +167,27 @@ export class Firepad implements IFirepad {
     this._editorClient.on(
       EditorClientEvent.Synced,
       (synced: boolean | IDatabaseAdapterEvent) => {
-        this._trigger(FirepadEvent.Synced, synced);
+        setTimeout(() => {
+          this._trigger(FirepadEvent.Synced, synced);
+        });
       }
     );
 
     this._editorClient.on(
       EditorClientEvent.Undo,
       (undoOperation: string | IEditorAdapterEvent) => {
-        this._trigger(FirepadEvent.Undo, undoOperation);
+        setTimeout(() => {
+          this._trigger(FirepadEvent.Undo, undoOperation);
+        });
       }
     );
 
     this._editorClient.on(
       EditorClientEvent.Redo,
       (redoOperation: string | IEditorAdapterEvent) => {
-        this._trigger(FirepadEvent.Redo, redoOperation);
+        setTimeout(() => {
+          this._trigger(FirepadEvent.Redo, redoOperation);
+        });
       }
     );
 
@@ -192,7 +198,9 @@ export class Firepad implements IFirepad {
         operation: string,
         state: DatabaseAdapterStateType | EditorAdapterStateType
       ) => {
-        this._trigger(FirepadEvent.Error, error, operation, state);
+        setTimeout(() => {
+          this._trigger(FirepadEvent.Error, error, operation, state);
+        });
       }
     );
   }

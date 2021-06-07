@@ -54,28 +54,26 @@ export class WrappedOperation implements IWrappedOperation {
     return this._operation.clone();
   }
 
-  equals(other: ITextOperation): boolean {
-    const wrappedOther = this._getWrappedOperation(other);
-    return this._operation.equals(wrappedOther._operation);
+  retain(n: number, attributes: ITextOpAttributes | null): WrappedOperation {
+    this._operation.retain(n, attributes);
+    return this;
   }
 
-  retain(n: number, attributes: ITextOpAttributes | null): ITextOperation {
-    return this._operation.retain(n, attributes);
+  insert(str: string, attributes: ITextOpAttributes | null): WrappedOperation {
+    this._operation.insert(str, attributes);
+    return this;
   }
 
-  insert(str: string, attributes: ITextOpAttributes | null): ITextOperation {
-    return this._operation.insert(str, attributes);
-  }
-
-  delete(n: string | number): ITextOperation {
-    return this._operation.delete(n);
+  delete(n: string | number): WrappedOperation {
+    this._operation.delete(n);
+    return this;
   }
 
   isNoop(): boolean {
     return this._operation.isNoop();
   }
 
-  clone(): ITextOperation {
+  clone(): WrappedOperation {
     return new WrappedOperation(
       this._operation.clone(),
       this._metadata?.clone()
@@ -90,7 +88,7 @@ export class WrappedOperation implements IWrappedOperation {
     return this._operation.apply(prevContent, prevAttributes, attributes);
   }
 
-  invert(content: string): ITextOperation {
+  invert(content: string): WrappedOperation {
     return new WrappedOperation(
       this._operation.invert(content),
       this._metadata?.invert()
@@ -105,7 +103,12 @@ export class WrappedOperation implements IWrappedOperation {
     return operation as WrappedOperation;
   }
 
-  transform(other: ITextOperation): [ITextOperation, ITextOperation] {
+  equals(other: ITextOperation): boolean {
+    const wrappedOther = this._getWrappedOperation(other);
+    return this._operation.equals(wrappedOther._operation);
+  }
+
+  transform(other: ITextOperation): [WrappedOperation, WrappedOperation] {
     const wrappedOther = this._getWrappedOperation(other);
     const [pair0, pair1] = this._operation.transform(wrappedOther._operation);
 
@@ -119,6 +122,11 @@ export class WrappedOperation implements IWrappedOperation {
     );
 
     return [wrappedPair0, wrappedPair1];
+  }
+
+  canMergeWith(other: ITextOperation): boolean {
+    const wrappedOther = this._getWrappedOperation(other);
+    return this._operation.canMergeWith(wrappedOther._operation);
   }
 
   protected _composeMeta(
@@ -135,7 +143,7 @@ export class WrappedOperation implements IWrappedOperation {
     return this._metadata.compose(otherMetadata);
   }
 
-  compose(other: ITextOperation): ITextOperation {
+  compose(other: ITextOperation): WrappedOperation {
     const wrappedOther = this._getWrappedOperation(other);
 
     return new WrappedOperation(
@@ -154,11 +162,6 @@ export class WrappedOperation implements IWrappedOperation {
     return this._operation.shouldBeComposedWithInverted(
       wrappedOther._operation
     );
-  }
-
-  canMergeWith(other: ITextOperation): boolean {
-    const wrappedOther = this._getWrappedOperation(other);
-    return this._operation.canMergeWith(wrappedOther._operation);
   }
 
   toString(): string {
