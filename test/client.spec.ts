@@ -1,28 +1,17 @@
 import { Client, IBaseClient, IClient } from "../src/client";
 import { ITextOperation, TextOperation } from "../src/text-operation";
+import { getBaseClient } from "./factory";
 
 describe("Client", () => {
   let client: IClient;
-  let operator: IBaseClient;
-  let sendOperationStub: Function;
-  let applyOperationStub: Function;
+  let baseClient: IBaseClient;
 
   beforeAll(() => {
-    sendOperationStub = jest.fn();
-    applyOperationStub = jest.fn();
-
-    operator = {
-      sendOperation(operation: ITextOperation) {
-        sendOperationStub(operation);
-      },
-      applyOperation(operation: ITextOperation) {
-        applyOperationStub(operation);
-      },
-    };
+    baseClient = getBaseClient();
   });
 
   beforeEach(() => {
-    client = new Client(operator);
+    client = new Client(baseClient);
   });
 
   afterEach(() => {
@@ -45,7 +34,7 @@ describe("Client", () => {
     it("should send operation to server on receiving operation from document in `Synchronized` state", () => {
       const operation = new TextOperation();
       client.applyClient(operation);
-      expect(sendOperationStub).toHaveBeenCalledWith(operation);
+      expect(baseClient.sendOperation).toHaveBeenCalledWith(operation);
     });
 
     it("should transition to `AwaitingWithBuffer` state on receiving operation from document in `AwaitingConfirm` state", () => {
@@ -71,7 +60,7 @@ describe("Client", () => {
     it("should apply changes to document on receiving operation from server in `Synchronized` state", () => {
       const operation = new TextOperation();
       client.applyServer(operation);
-      expect(applyOperationStub).toHaveBeenCalledWith(operation);
+      expect(baseClient.applyOperation).toHaveBeenCalledWith(operation);
     });
 
     it("should stay in `AwaitingConfirm` state on receiving operation from server in `AwaitingConfirm` state", () => {
@@ -84,7 +73,7 @@ describe("Client", () => {
       client.applyClient(new TextOperation());
       const operation = new TextOperation();
       client.applyServer(operation);
-      expect(applyOperationStub).toHaveBeenCalledWith(operation);
+      expect(baseClient.applyOperation).toHaveBeenCalledWith(operation);
     });
 
     it("should stay in `AwaitingWithBuffer` state on receiving operation from server in `AwaitingWithBuffer` state", () => {
@@ -99,7 +88,7 @@ describe("Client", () => {
       client.applyClient(new TextOperation());
       const operation = new TextOperation();
       client.applyServer(operation);
-      expect(applyOperationStub).toHaveBeenCalledWith(operation);
+      expect(baseClient.applyOperation).toHaveBeenCalledWith(operation);
     });
   });
 
@@ -127,7 +116,7 @@ describe("Client", () => {
       client.applyClient(new TextOperation());
       client.applyClient(operation);
       client.serverAck();
-      expect(sendOperationStub).toHaveBeenNthCalledWith(2, operation);
+      expect(baseClient.sendOperation).toHaveBeenNthCalledWith(2, operation);
     });
   });
 
@@ -147,7 +136,7 @@ describe("Client", () => {
       const operation = new TextOperation();
       client.applyClient(operation);
       client.serverRetry();
-      expect(sendOperationStub).toHaveBeenNthCalledWith(2, operation);
+      expect(baseClient.sendOperation).toHaveBeenNthCalledWith(2, operation);
     });
 
     it("should resend operation on receiving error from server in `AwaitingWithBuffer` state", () => {
@@ -155,7 +144,7 @@ describe("Client", () => {
       const operation = new TextOperation();
       client.applyClient(operation);
       client.serverRetry();
-      expect(sendOperationStub).toHaveBeenNthCalledWith(2, operation);
+      expect(baseClient.sendOperation).toHaveBeenNthCalledWith(2, operation);
     });
   });
 });
