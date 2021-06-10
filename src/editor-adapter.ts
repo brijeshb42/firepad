@@ -69,31 +69,31 @@ export interface IEditorAdapter extends IDisposable {
     listener: EventListenerType<IEditorAdapterEvent>
   ): void;
   /**
-   * `registerCallback` attaches callback for Editor Event handling from top-level.
+   * Attaches callback for Editor Event handling from top-level.
    * @param callbacks - Map of Editor Events and Callbacks.
    */
   registerCallbacks(callbacks: EditorEventCallbackType): void;
   /**
-   * `registerUndo` attaches callback for Editor Event handling from top-level.
+   * Attaches callback for Editor Event handling from top-level.
    * @param callback - Undo Event Handler.
    */
   registerUndo(callback: UndoRedoCallbackType): void;
   /**
-   * `registerRedo` attaches callback for Editor Event handling from top-level.
+   * Attaches callback for Editor Event handling from top-level.
    * @param callback - Redo Event Handler.
    */
   registerRedo(callback: UndoRedoCallbackType): void;
   /**
-   * `getCursor` Returns Cursor position of current User in Editor.
+   * Returns Cursor position of current User in Editor.
    */
   getCursor(): ICursor | null;
   /**
-   * `setCursor` Add Cursor position of current User in Editor.
+   * Add Cursor position of current User in Editor.
    * @param cursor - Cursor position of Current User.
    */
   setCursor(cursor: ICursor): void;
   /**
-   * `setOtherCursor` Add Cursor position of Remote Users in Editor.
+   * Add Cursor position of Remote Users in Editor.
    * @param clientID - Remote User ID.
    * @param cursor - Cursor Object of Remote User.
    * @param userColor - HexaDecimal/RGB Color Code for Cursor/Selection.
@@ -106,11 +106,11 @@ export interface IEditorAdapter extends IDisposable {
     userName?: string
   ): IDisposable;
   /**
-   * `getText` Returns current content of the Editor.
+   * Returns current content of the Editor.
    */
   getText(): string;
   /**
-   * `setText` Sets current content of the Editor.
+   * Sets current content of the Editor.
    * @param text - Text Content.
    */
   setText(text: string): void;

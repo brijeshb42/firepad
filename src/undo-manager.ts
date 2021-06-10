@@ -8,7 +8,7 @@ enum UndoManagerState {
   Redoing = "redoing",
 }
 
-type UndoManagerCallbackType = (operation: IWrappedOperation) => void;
+type UndoManagerCallbackType = (operation?: IWrappedOperation) => void;
 
 export interface IUndoManager extends Utils.IDisposable {
   /**
@@ -184,7 +184,7 @@ export class UndoManager implements IUndoManager {
 
     Utils.validateInEquality(this._undoStack.length, 0, "undo not possible");
 
-    callback(this._undoStack.pop()!);
+    callback(this._undoStack.pop());
     this._state = UndoManagerState.Normal;
   }
 
@@ -193,7 +193,7 @@ export class UndoManager implements IUndoManager {
 
     Utils.validateInEquality(this._redoStack.length, 0, "redo not possible");
 
-    callback(this._redoStack.pop()!);
+    callback(this._redoStack.pop());
     this._state = UndoManagerState.Normal;
   }
 

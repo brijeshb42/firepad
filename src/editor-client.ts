@@ -54,11 +54,11 @@ export class EditorClient implements IEditorClient {
   protected readonly _databaseAdapter: IDatabaseAdapter;
   protected readonly _editorAdapter: IEditorAdapter;
   protected readonly _remoteClients: Map<string, IRemoteClient>;
+  protected readonly _undoManager: IUndoManager;
 
   protected _focused: boolean;
   protected _cursor: ICursor | null;
   protected _emitter: IEventEmitter | null;
-  protected _undoManager: IUndoManager | null;
   protected _sendCursorTimeout: NodeJS.Timeout | null;
 
   /**
@@ -178,13 +178,9 @@ export class EditorClient implements IEditorClient {
       this._emitter.dispose();
       this._emitter = null;
     }
-
-    if (this._undoManager) {
-      this._undoManager.dispose();
-      this._undoManager = null;
-    }
-
+    
     this._client.dispose();
+    this._undoManager.dispose();
     this._remoteClients.clear();
   }
 
@@ -232,22 +228,22 @@ export class EditorClient implements IEditorClient {
     this._updateCursor();
 
     const compose =
-      this._undoManager!.canUndo() &&
+      this._undoManager.canUndo() &&
       inverse.shouldBeComposedWithInverted(
-        this._undoManager!.last() as IWrappedOperation
+        this._undoManager.last()!
       );
 
     const inverseMeta = new OperationMeta(this._cursor, cursorBefore);
-    this._undoManager!.add(new WrappedOperation(inverse, inverseMeta), compose);
+    this._undoManager.add(new WrappedOperation(inverse, inverseMeta), compose);
     this._client.applyClient(operation);
   }
 
   clearUndoRedoStack(): void {
-    this._undoManager!.dispose();
+    this._undoManager.dispose();
   }
 
   protected _applyUnredo(wrappedOperation: IWrappedOperation) {
-    this._undoManager!.add(
+    this._undoManager.add(
       this._editorAdapter.invertOperation(wrappedOperation)
     );
 
@@ -263,22 +259,22 @@ export class EditorClient implements IEditorClient {
   }
 
   protected _undo() {
-    if (!this._undoManager!.canUndo()) {
+    if (!this._undoManager.canUndo()) {
       return;
     }
 
-    this._undoManager!.performUndo((operation: IWrappedOperation) => {
+    this._undoManager.performUndo((operation: IWrappedOperation) => {
       this._applyUnredo(operation);
       this._trigger(EditorClientEvent.Undo, operation.toString());
     });
   }
 
   protected _redo() {
-    if (!this._undoManager!.canRedo()) {
+    if (!this._undoManager.canRedo()) {
       return;
     }
 
-    this._undoManager!.performRedo((operation: IWrappedOperation) => {
+    this._undoManager.performRedo((operation: IWrappedOperation) => {
       this._applyUnredo(operation);
       this._trigger(EditorClientEvent.Redo, operation.toString());
     });
@@ -291,7 +287,7 @@ export class EditorClient implements IEditorClient {
   applyOperation(operation: ITextOperation): void {
     this._editorAdapter.applyOperation(operation);
     this._updateCursor();
-    this._undoManager!.transform(new WrappedOperation(operation));
+    this._undoManager.transform(new WrappedOperation(operation));
   }
 
   protected _sendCursor(cursor: ICursor | null) {

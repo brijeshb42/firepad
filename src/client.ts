@@ -54,15 +54,29 @@ export interface IClient
 }
 
 interface IClientSynchronizationState extends IClientStateMachine {
+  /**
+   * Send operation to remote users.
+   * @param operation - Text Operation from Editor Adapter
+   */
   applyClient(
     client: IClient,
     operation: ITextOperation
   ): IClientSynchronizationState;
+  /**
+   * Recieve operation from remote user.
+   * @param operation - Text Operation recieved from remote user.
+   */
   applyServer(
     client: IClient,
     operation: ITextOperation
   ): IClientSynchronizationState;
+  /**
+   * Handle acknowledgement
+   */
   serverAck(client: IClient): IClientSynchronizationState;
+  /**
+   * Handle retry
+   */
   serverRetry(client: IClient): IClientSynchronizationState;
 }
 

@@ -1,7 +1,9 @@
 import { ICursor } from "../../src/cursor";
 import { DatabaseAdapterCallbackType, DatabaseAdapterEvent, IDatabaseAdapter, IDatabaseAdapterEvent } from "../../src/database-adapter";
 import { EventEmitter, EventListenerType, IEventEmitter } from "../../src/emitter";
+import { ITextOperation } from "../../src/text-operation";
 import * as Utils from "../../src/utils";
+import { clearMock, resetMock } from "./factory-utils";
 
 Utils.validateFalse(
   jest == null,
@@ -42,13 +44,22 @@ const databaseAdapter: IDatabaseAdapterMock = Object.freeze({
     emitter.dispose();
   }),
   sendCursor: jest.fn<void, [ICursor]>(),
+  sendOperation: jest.fn<void, [ITextOperation]>(),
+});
+
+afterEach(() => {
+  clearMock(databaseAdapter);
 });
 
 afterAll(() => {
-  databaseAdapter.dispose();
-  jest.resetAllMocks();
+  emitter.dispose();
+  resetMock(databaseAdapter);
 });
 
+/**
+ * Returns a mock implementation of IDatabaseAdapter interface.
+ * Useful for testing Editor Client, Firepad and related helper functions.
+ */
 export function getDatabaseAdapter(): IDatabaseAdapterMock {
   return databaseAdapter;
 }

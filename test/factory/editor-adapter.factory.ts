@@ -11,7 +11,9 @@ import {
   EventListenerType,
   IEventEmitter,
 } from "../../src/emitter";
+import { ITextOperation } from "../../src/text-operation";
 import * as Utils from "../../src/utils";
+import { clearMock, resetMock } from "./factory-utils";
 
 Utils.validateFalse(
   jest == null,
@@ -26,6 +28,8 @@ export interface IEditorAdapterMock extends Partial<IEditorAdapter> {
 }
 
 const disposeRemoteCursorStub = jest.fn<void, []>();
+let currentCursor: ICursor | null = null;
+let content: string = "";
 
 const editorAdapter: IEditorAdapterMock = Object.freeze({
   on: jest.fn<
@@ -60,17 +64,58 @@ const editorAdapter: IEditorAdapterMock = Object.freeze({
   dispose: jest.fn<void, []>(() => {
     emitter.dispose();
   }),
+  getCursor: jest.fn<ICursor, []>(() => currentCursor),
+  setCursor: jest.fn<void, [ICursor]>((cursor) => {
+    currentCursor = cursor;
+  }),
   setOtherCursor: jest.fn<Utils.IDisposable, [ClientIDType, ICursor, string, string | undefined]>(() => ({
     dispose: disposeRemoteCursorStub,
   })),
   disposeCursor: disposeRemoteCursorStub,
+  getText: jest.fn<string, []>(() => content),
+  setText: jest.fn<void, [string]>((text) => {
+    content = text;
+  }),
+  applyOperation: jest.fn<void, [ITextOperation]>((operation) => {
+    let index = 0;
+    const contentArray = [...content];
+    const ops = operation.getOps();
+
+    for (const op of ops) {
+      if (op.isRetain()) {
+        index += op.chars;
+        continue;
+      }
+
+      if (op.isDelete()) {
+        contentArray.splice(index, op.chars);
+        continue;
+      }
+
+      if (op.isInsert()) {
+        contentArray.splice(index, 0, ...[...op.text]);
+        index += op.text.length;
+      }
+    }
+
+    content = contentArray.join("");
+  }),
+  invertOperation: jest.fn<ITextOperation, [ITextOperation]>((operation) => operation.invert(content)),
+});
+
+afterEach(() => {
+  clearMock(editorAdapter);
 });
 
 afterAll(() => {
-  editorAdapter.dispose();
-  jest.resetAllMocks();
+  emitter.dispose();
+  resetMock(editorAdapter);
 });
 
+/**
+ * Returns a mock implementation of IEditorAdapter interface.
+ * Useful for testing Editor Client, Firepad and related helper functions.
+ */
 export function getEditorAdapter(): IEditorAdapterMock {
   return editorAdapter;
 }

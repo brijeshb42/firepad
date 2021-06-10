@@ -16,7 +16,6 @@ describe("Client", () => {
 
   afterEach(() => {
     client.dispose();
-    jest.resetAllMocks();
   });
 
   describe("#isSynchronized", () => {
