@@ -5,7 +5,7 @@ Object {
   "Acknowledge": "ack",
   "CursorChange": "cursor",
   "Error": "error",
-  "InitialRevisions": "initialRevisions",
+  "InitialRevision": "initialRevision",
   "Operation": "operation",
   "Ready": "ready",
   "Retry": "retry",

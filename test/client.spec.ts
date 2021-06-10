@@ -1,21 +1,45 @@
-import { Client, IBaseClient, IClient } from "../src/client";
+import { Client, ClientEvent, IClient } from "../src/client";
+import { EventListenerType } from "../src/emitter";
 import { ITextOperation, TextOperation } from "../src/text-operation";
-import { getBaseClient } from "./factory";
 
 describe("Client", () => {
   let client: IClient;
-  let baseClient: IBaseClient;
+  let applyOperationStub: EventListenerType<ITextOperation>;
+  let eventListenerStub: EventListenerType<ITextOperation>;
+  let sendOperationStub: EventListenerType<ITextOperation>;
 
   beforeAll(() => {
-    baseClient = getBaseClient();
+    applyOperationStub = jest.fn<void, [ITextOperation]>();
+    eventListenerStub = jest.fn<void, [ITextOperation]>();
+    sendOperationStub = jest.fn<void, [ITextOperation]>();
   });
 
   beforeEach(() => {
-    client = new Client(baseClient);
+    client = new Client();
   });
 
   afterEach(() => {
     client.dispose();
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
+  describe("#on", () => {
+    it("should attach event listener to emitter for valid event", () => {
+      const fn = () => client.on(ClientEvent.ApplyOperation, eventListenerStub);
+      expect(fn).not.toThrowError();
+    });
+  });
+
+  describe("#off", () => {
+    it("should detach event listener to emitter for valid event", () => {
+      const fn = () =>
+        client.off(ClientEvent.ApplyOperation, eventListenerStub);
+      expect(fn).not.toThrowError();
+    });
   });
 
   describe("#isSynchronized", () => {
@@ -30,10 +54,15 @@ describe("Client", () => {
       expect(client.isAwaitingConfirm()).toEqual(true);
     });
 
-    it("should send operation to server on receiving operation from document in `Synchronized` state", () => {
+    it("should send operation to server on receiving operation from document in `Synchronized` state", (done) => {
+      client.on(ClientEvent.SendOperation, (operation) => {
+        sendOperationStub(operation);
+        done();
+      });
+
       const operation = new TextOperation();
       client.applyClient(operation);
-      expect(baseClient.sendOperation).toHaveBeenCalledWith(operation);
+      expect(sendOperationStub).toHaveBeenCalledWith(operation);
     });
 
     it("should transition to `AwaitingWithBuffer` state on receiving operation from document in `AwaitingConfirm` state", () => {
@@ -56,10 +85,15 @@ describe("Client", () => {
       expect(client.isSynchronized()).toEqual(true);
     });
 
-    it("should apply changes to document on receiving operation from server in `Synchronized` state", () => {
+    it("should apply changes to document on receiving operation from server in `Synchronized` state", (done) => {
+      client.on(ClientEvent.ApplyOperation, (operation) => {
+        applyOperationStub(operation);
+        done();
+      });
+
       const operation = new TextOperation();
       client.applyServer(operation);
-      expect(baseClient.applyOperation).toHaveBeenCalledWith(operation);
+      expect(applyOperationStub).toHaveBeenCalledWith(operation);
     });
 
     it("should stay in `AwaitingConfirm` state on receiving operation from server in `AwaitingConfirm` state", () => {
@@ -68,11 +102,16 @@ describe("Client", () => {
       expect(client.isAwaitingConfirm()).toEqual(true);
     });
 
-    it("should apply changes to document on receiving operation from server in `AwaitingConfirm` state", () => {
+    it("should apply changes to document on receiving operation from server in `AwaitingConfirm` state", (done) => {
+      client.on(ClientEvent.ApplyOperation, (operation) => {
+        applyOperationStub(operation);
+        done();
+      });
+
       client.applyClient(new TextOperation());
       const operation = new TextOperation();
       client.applyServer(operation);
-      expect(baseClient.applyOperation).toHaveBeenCalledWith(operation);
+      expect(applyOperationStub).toHaveBeenCalledWith(operation);
     });
 
     it("should stay in `AwaitingWithBuffer` state on receiving operation from server in `AwaitingWithBuffer` state", () => {
@@ -82,12 +121,17 @@ describe("Client", () => {
       expect(client.isAwaitingWithBuffer()).toEqual(true);
     });
 
-    it("should apply changes to document on receiving operation from server in `AwaitingWithBuffer` state", () => {
+    it("should apply changes to document on receiving operation from server in `AwaitingWithBuffer` state", (done) => {
+      client.on(ClientEvent.ApplyOperation, (operation) => {
+        applyOperationStub(operation);
+        done();
+      });
+
       client.applyClient(new TextOperation());
       client.applyClient(new TextOperation());
       const operation = new TextOperation();
       client.applyServer(operation);
-      expect(baseClient.applyOperation).toHaveBeenCalledWith(operation);
+      expect(applyOperationStub).toHaveBeenCalledWith(operation);
     });
   });
 
@@ -110,12 +154,21 @@ describe("Client", () => {
       expect(client.isAwaitingConfirm()).toEqual(true);
     });
 
-    it("should send outstanding operation to server on receiving acknowledgement from document in `AwaitingWithBuffer` state", () => {
+    it("should send outstanding operation to server on receiving acknowledgement from document in `AwaitingWithBuffer` state", (done) => {
+      client.on(ClientEvent.SendOperation, (operation) => {
+        sendOperationStub(operation);
+      });
+
       const operation = new TextOperation();
       client.applyClient(new TextOperation());
+
+      client.on(ClientEvent.SendOperation, () => {
+        done();
+      });
+
       client.applyClient(operation);
       client.serverAck();
-      expect(baseClient.sendOperation).toHaveBeenNthCalledWith(2, operation);
+      expect(sendOperationStub).toHaveBeenNthCalledWith(2, operation);
     });
   });
 
@@ -131,19 +184,37 @@ describe("Client", () => {
       expect(client.isAwaitingConfirm()).toEqual(true);
     });
 
-    it("should resend operation on receiving error from server in `AwaitingConfirm` state", () => {
+    it("should resend operation on receiving error from server in `AwaitingConfirm` state", (done) => {
+      client.on(ClientEvent.SendOperation, (operation) => {
+        sendOperationStub(operation);
+      });
+
       const operation = new TextOperation();
       client.applyClient(operation);
+
+      client.on(ClientEvent.SendOperation, () => {
+        done();
+      });
+
       client.serverRetry();
-      expect(baseClient.sendOperation).toHaveBeenNthCalledWith(2, operation);
+      expect(sendOperationStub).toHaveBeenNthCalledWith(2, operation);
     });
 
-    it("should resend operation on receiving error from server in `AwaitingWithBuffer` state", () => {
+    it("should resend operation on receiving error from server in `AwaitingWithBuffer` state", (done) => {
+      client.on(ClientEvent.SendOperation, (operation) => {
+        sendOperationStub(operation);
+      });
+
       client.applyClient(new TextOperation());
       const operation = new TextOperation();
       client.applyClient(operation);
+
+      client.on(ClientEvent.SendOperation, () => {
+        done();
+      });
+
       client.serverRetry();
-      expect(baseClient.sendOperation).toHaveBeenNthCalledWith(2, operation);
+      expect(sendOperationStub).toHaveBeenNthCalledWith(2, operation);
     });
   });
 });

@@ -145,13 +145,6 @@ export class Firepad implements IFirepad {
   }
 
   protected _init(): void {
-    this._databaseAdapter.on(
-      DatabaseAdapterEvent.CursorChange,
-      (userId: UserIDType | IDatabaseAdapterEvent) => {
-        this._trigger(FirepadEvent.CursorChange, userId);
-      }
-    );
-
     this._databaseAdapter.on(DatabaseAdapterEvent.Ready, () => {
       this._ready = true;
 
@@ -262,6 +255,7 @@ export class Firepad implements IFirepad {
   }
 
   dispose(): void {
+    this._zombie = true;
     this._databaseAdapter.dispose();
     this._editorAdapter.dispose();
     this._editorClient.dispose();

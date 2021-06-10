@@ -3,16 +3,17 @@ import {
   EventEmitter,
   EventListenerType,
   IEventEmitter,
+  IEvent,
 } from "../src/emitter";
 
 describe("Emitter", () => {
   let event: EventType;
   let emitter: IEventEmitter;
-  let eventListener: EventListenerType<unknown>;
+  let eventListenerStub: EventListenerType<IEvent>;
 
   beforeAll(() => {
     event = "Some Event";
-    eventListener = jest.fn();
+    eventListenerStub = jest.fn<void, [IEvent]>();
   });
 
   beforeEach(() => {
@@ -26,26 +27,26 @@ describe("Emitter", () => {
 
   describe("#on", () => {
     it("should attach event listener to emitter for valid event", () => {
-      const fn = () => emitter.on(event, eventListener);
+      const fn = () => emitter.on(event, eventListenerStub);
       expect(fn).not.toThrowError();
     });
 
     it("should throw error for invalid event", () => {
       const otherEvent = "Some Other Event";
-      const fn = () => emitter.on(otherEvent, eventListener);
+      const fn = () => emitter.on(otherEvent, eventListenerStub);
       expect(fn).toThrowError();
     });
   });
 
   describe("#off", () => {
     it("should detach event listener to emitter for valid event", () => {
-      const fn = () => emitter.off(event, eventListener);
+      const fn = () => emitter.off(event, eventListenerStub);
       expect(fn).not.toThrowError();
     });
 
     it("should throw error for invalid event", () => {
       const otherEvent = "Some Other Event";
-      const fn = () => emitter.off(otherEvent, eventListener);
+      const fn = () => emitter.off(otherEvent, eventListenerStub);
       expect(fn).toThrowError();
     });
   });
@@ -53,17 +54,17 @@ describe("Emitter", () => {
   describe("#trigger", () => {
     it("should invoke event listener for given event", () => {
       const eventAtrr = "Some Event Details";
-      emitter.on(event, eventListener);
+      emitter.on(event, eventListenerStub);
       emitter.trigger(event, eventAtrr);
-      expect(eventListener).toHaveBeenCalledWith(eventAtrr);
+      expect(eventListenerStub).toHaveBeenCalledWith(eventAtrr);
     });
 
     it("should not invoke event listener after detachment", () => {
       const eventAtrr = "Some Event Details";
-      emitter.on(event, eventListener);
-      emitter.off(event, eventListener);
+      emitter.on(event, eventListenerStub);
+      emitter.off(event, eventListenerStub);
       emitter.trigger(event, eventAtrr);
-      expect(eventListener).not.toHaveBeenCalled();
+      expect(eventListenerStub).not.toHaveBeenCalled();
     });
 
     it("should not throw error if no listener is attached", () => {

@@ -150,7 +150,7 @@ export class FirebaseAdapter implements IDatabaseAdapter {
       FirebaseAdapterEvent.Operation,
       FirebaseAdapterEvent.Ready,
       FirebaseAdapterEvent.Retry,
-      FirebaseAdapterEvent.InitialRevisions,
+      FirebaseAdapterEvent.InitialRevision,
     ]);
 
     this._init();
@@ -323,7 +323,7 @@ export class FirebaseAdapter implements IDatabaseAdapter {
 
     if (!this._initialRevisions) {
       this._initialRevisions = true;
-      this._trigger(FirebaseAdapterEvent.InitialRevisions);
+      this._trigger(FirebaseAdapterEvent.InitialRevision);
     }
 
     // Compose the checkpoint and all subsequent revisions into a single operation to apply at once.

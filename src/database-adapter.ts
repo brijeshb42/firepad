@@ -30,7 +30,7 @@ export enum DatabaseAdapterEvent {
   Acknowledge = "ack",
   Retry = "retry",
   Error = "error",
-  InitialRevisions = "initialRevisions",
+  InitialRevision = "initialRevision",
 }
 
 export interface IDatabaseAdapterEvent extends IEvent {}
@@ -41,7 +41,7 @@ export type DatabaseAdapterCallbackType = {
   [DatabaseAdapterEvent.Operation]: EventListenerType<ITextOperation>;
   [DatabaseAdapterEvent.Acknowledge]: EventListenerType<IDatabaseAdapterEvent>;
   [DatabaseAdapterEvent.CursorChange]: EventListenerType<string>;
-  [DatabaseAdapterEvent.InitialRevisions]: EventListenerType<boolean>;
+  [DatabaseAdapterEvent.InitialRevision]: EventListenerType<boolean>;
 };
 
 /**

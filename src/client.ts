@@ -1,17 +1,15 @@
+import {
+  EventEmitter,
+  EventListenerType,
+  IEvent,
+  IEventEmitter,
+} from "./emitter";
 import { ITextOperation } from "./text-operation";
 import * as Utils from "./utils";
 
-export interface IBaseClient {
-  /**
-   * Send operation to Database adapter.
-   * @param operation - Text Operation at client end.
-   */
-  sendOperation(operation: ITextOperation): void;
-  /**
-   * Apply operation to Editor adapter
-   * @param operation - Text Operation at Server end.
-   */
-  applyOperation(operation: ITextOperation): void;
+export enum ClientEvent {
+  ApplyOperation = "apply",
+  SendOperation = "send",
 }
 
 interface IClientStateMachine {
@@ -29,10 +27,19 @@ interface IClientStateMachine {
   isAwaitingWithBuffer(): boolean;
 }
 
-export interface IClient
-  extends IBaseClient,
-    IClientStateMachine,
-    Utils.IDisposable {
+export interface IClient extends IClientStateMachine, Utils.IDisposable {
+  /**
+   * Add listener to Client.
+   * @param event - Event name.
+   * @param listener - Event handler callback.
+   */
+  on(event: ClientEvent, listener: EventListenerType<ITextOperation>): void;
+  /**
+   * Remove listener to Client.
+   * @param event - Event name.
+   * @param listener - Event handler callback.
+   */
+  off(event: ClientEvent, listener: EventListenerType<ITextOperation>): void;
   /**
    * Send operation to remote users.
    * @param operation - Text Operation from Editor Adapter
@@ -51,6 +58,16 @@ export interface IClient
    * Handle retry
    */
   serverRetry(): void;
+  /**
+   * Send operation to Database adapter.
+   * @param operation - Text Operation at client end.
+   */
+  sendOperation(operation: ITextOperation): void;
+  /**
+   * Apply operation to Editor adapter
+   * @param operation - Text Operation at Server end.
+   */
+  applyOperation(operation: ITextOperation): void;
 }
 
 interface IClientSynchronizationState extends IClientStateMachine {
@@ -277,20 +294,20 @@ class AwaitingWithBuffer implements IClientSynchronizationState {
 }
 
 export class Client implements IClient {
-  protected _operator: IBaseClient | null;
+  protected readonly _emitter: IEventEmitter | null;
+
   protected _state: IClientSynchronizationState;
 
-  constructor(operator: IBaseClient) {
-    this._operator = operator;
+  constructor() {
     this._state = _synchronized;
+    this._emitter = new EventEmitter([
+      ClientEvent.ApplyOperation,
+      ClientEvent.SendOperation,
+    ]);
   }
 
   dispose(): void {
-    this._operator = null;
-  }
-
-  protected _setState(state: IClientSynchronizationState): void {
-    this._state = state;
+    this._emitter.dispose();
   }
 
   isSynchronized(): boolean {
@@ -303,6 +320,22 @@ export class Client implements IClient {
 
   isAwaitingWithBuffer(): boolean {
     return this._state.isAwaitingWithBuffer();
+  }
+
+  on(event: ClientEvent, listener: EventListenerType<ITextOperation>): void {
+    return this._emitter.on(event, listener as EventListenerType<IEvent>);
+  }
+
+  off(event: ClientEvent, listener: EventListenerType<ITextOperation>): void {
+    return this._emitter.off(event, listener as EventListenerType<IEvent>);
+  }
+
+  protected _trigger(event: ClientEvent, eventArgs: ITextOperation): void {
+    return this._emitter.trigger(event, eventArgs);
+  }
+
+  protected _setState(state: IClientSynchronizationState): void {
+    this._state = state;
   }
 
   applyClient(operation: ITextOperation): void {
@@ -322,20 +355,10 @@ export class Client implements IClient {
   }
 
   sendOperation(operation: ITextOperation): void {
-    Utils.validateFalse(
-      this._operator == null,
-      "sendOperation() is called after Client is disposed."
-    );
-
-    this._operator!.sendOperation(operation);
+    this._trigger(ClientEvent.SendOperation, operation);
   }
 
   applyOperation(operation: ITextOperation): void {
-    Utils.validateFalse(
-      this._operator == null,
-      "applyOperation() is called after Client is disposed."
-    );
-
-    this._operator!.applyOperation(operation);
+    this._trigger(ClientEvent.ApplyOperation, operation);
   }
 }

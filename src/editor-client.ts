@@ -1,4 +1,4 @@
-import { Client, IBaseClient, IClient } from "./client";
+import { Client, ClientEvent, IClient } from "./client";
 import { Cursor, CursorType, ICursor } from "./cursor";
 import { IDatabaseAdapter } from "./database-adapter";
 import { IEditorAdapter } from "./editor-adapter";
@@ -22,9 +22,9 @@ export enum EditorClientEvent {
   Synced = "synced",
 }
 
-interface IEditorClientEvent extends IEvent {}
+export interface IEditorClientEvent extends IEvent {}
 
-export interface IEditorClient extends IBaseClient, IDisposable {
+export interface IEditorClient extends IDisposable {
   /**
    * Add listener to Editor Client.
    * @param event - Event name.
@@ -53,12 +53,12 @@ export class EditorClient implements IEditorClient {
   protected readonly _client: IClient;
   protected readonly _databaseAdapter: IDatabaseAdapter;
   protected readonly _editorAdapter: IEditorAdapter;
+  protected readonly _emitter: IEventEmitter;
   protected readonly _remoteClients: Map<string, IRemoteClient>;
   protected readonly _undoManager: IUndoManager;
 
-  protected _focused: boolean;
   protected _cursor: ICursor | null;
-  protected _emitter: IEventEmitter | null;
+  protected _focused: boolean;
   protected _sendCursorTimeout: NodeJS.Timeout | null;
 
   /**
@@ -74,7 +74,7 @@ export class EditorClient implements IEditorClient {
     this._cursor = null;
     this._sendCursorTimeout = null;
 
-    this._client = new Client(this);
+    this._client = new Client();
     this._databaseAdapter = databaseAdapter;
     this._editorAdapter = editorAdapter;
     this._undoManager = new UndoManager();
@@ -129,7 +129,7 @@ export class EditorClient implements IEditorClient {
       operation: (operation: ITextOperation) => {
         this._client.applyServer(operation);
       },
-      initialRevisions: () => {
+      initialRevision: () => {
         this._editorAdapter.setInitiated(true);
       },
       cursor: (
@@ -166,6 +166,14 @@ export class EditorClient implements IEditorClient {
         this._trigger(EditorClientEvent.Error, err, operation, state);
       },
     });
+
+    this._client.on(ClientEvent.ApplyOperation, (operation: ITextOperation) => {
+      this._applyOperation(operation);
+    });
+
+    this._client.on(ClientEvent.SendOperation, (operation: ITextOperation) => {
+      this._sendOperation(operation);
+    });
   }
 
   dispose(): void {
@@ -174,11 +182,7 @@ export class EditorClient implements IEditorClient {
       this._sendCursorTimeout = null;
     }
 
-    if (this._emitter) {
-      this._emitter.dispose();
-      this._emitter = null;
-    }
-    
+    this._emitter.dispose();
     this._client.dispose();
     this._undoManager.dispose();
     this._remoteClients.clear();
@@ -188,22 +192,22 @@ export class EditorClient implements IEditorClient {
     event: EditorClientEvent,
     listener: EventListenerType<IEditorClientEvent>
   ): void {
-    return this._emitter?.on(event, listener);
+    return this._emitter.on(event, listener);
   }
 
   off(
     event: EditorClientEvent,
     listener: EventListenerType<IEditorClientEvent>
   ): void {
-    return this._emitter?.off(event, listener);
+    return this._emitter.off(event, listener);
   }
 
   protected _trigger(
     event: EditorClientEvent,
-    eventArgs: IEditorClientEvent | void,
+    eventArgs: IEditorClientEvent,
     ...extraArgs: unknown[]
   ): void {
-    return this._emitter?.trigger(event, eventArgs || {}, ...extraArgs);
+    return this._emitter.trigger(event, eventArgs, ...extraArgs);
   }
 
   protected _emitSynced() {
@@ -229,9 +233,7 @@ export class EditorClient implements IEditorClient {
 
     const compose =
       this._undoManager.canUndo() &&
-      inverse.shouldBeComposedWithInverted(
-        this._undoManager.last()!
-      );
+      inverse.shouldBeComposedWithInverted(this._undoManager.last()!);
 
     const inverseMeta = new OperationMeta(this._cursor, cursorBefore);
     this._undoManager.add(new WrappedOperation(inverse, inverseMeta), compose);
@@ -280,11 +282,11 @@ export class EditorClient implements IEditorClient {
     });
   }
 
-  sendOperation(operation: ITextOperation): void {
+  protected _sendOperation(operation: ITextOperation): void {
     this._databaseAdapter.sendOperation(operation);
   }
 
-  applyOperation(operation: ITextOperation): void {
+  protected _applyOperation(operation: ITextOperation): void {
     this._editorAdapter.applyOperation(operation);
     this._updateCursor();
     this._undoManager.transform(new WrappedOperation(operation));

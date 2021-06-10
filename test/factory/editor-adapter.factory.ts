@@ -64,11 +64,15 @@ const editorAdapter: IEditorAdapterMock = Object.freeze({
   dispose: jest.fn<void, []>(() => {
     emitter.dispose();
   }),
+  setInitiated: jest.fn<void, [boolean]>(),
   getCursor: jest.fn<ICursor, []>(() => currentCursor),
   setCursor: jest.fn<void, [ICursor]>((cursor) => {
     currentCursor = cursor;
   }),
-  setOtherCursor: jest.fn<Utils.IDisposable, [ClientIDType, ICursor, string, string | undefined]>(() => ({
+  setOtherCursor: jest.fn<
+    Utils.IDisposable,
+    [ClientIDType, ICursor, string, string | undefined]
+  >(() => ({
     dispose: disposeRemoteCursorStub,
   })),
   disposeCursor: disposeRemoteCursorStub,
@@ -100,7 +104,9 @@ const editorAdapter: IEditorAdapterMock = Object.freeze({
 
     content = contentArray.join("");
   }),
-  invertOperation: jest.fn<ITextOperation, [ITextOperation]>((operation) => operation.invert(content)),
+  invertOperation: jest.fn<ITextOperation, [ITextOperation]>((operation) =>
+    operation.invert(content)
+  ),
 });
 
 afterEach(() => {
