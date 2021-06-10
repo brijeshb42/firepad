@@ -294,7 +294,7 @@ class AwaitingWithBuffer implements IClientSynchronizationState {
 }
 
 export class Client implements IClient {
-  protected readonly _emitter: IEventEmitter | null;
+  protected readonly _emitter: IEventEmitter;
 
   protected _state: IClientSynchronizationState;
 
