@@ -40,9 +40,9 @@ export interface IFirepadConstructorOptions {
   userId: UserIDType;
   /** Unique Hexadecimal color code for current User */
   userColor: string;
-  /** Name/Short Name of the current User */
+  /** Name/Short Name of the current User (optional) */
   userName?: string;
-  /** Default content of Firepad */
+  /** Default content of Firepad (optional) */
   defaultText?: string;
 }
 

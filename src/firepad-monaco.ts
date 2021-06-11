@@ -11,12 +11,12 @@ import * as Utils from "./utils";
  * Creates a modern Firepad from Monaco editor.
  * @param databaseRef - Firebase database Reference path.
  * @param editor - Monaco Editor instance.
- * @param options - Firepad constructor options.
+ * @param options - Firepad constructor options (optional).
  */
 export function fromMonaco(
   databaseRef: string | firebase.database.Reference,
   editor: monaco.editor.IStandaloneCodeEditor,
-  options: Partial<IFirepadConstructorOptions>
+  options: Partial<IFirepadConstructorOptions> = {}
 ): IFirepad {
   // Initialize constructor options with their default values
   const userId: UserIDType = options.userId || uuid();
