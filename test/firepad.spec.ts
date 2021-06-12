@@ -135,6 +135,7 @@ describe("Firepad", () => {
     });
 
     afterAll(() => {
+      jest.clearAllTimers();
       jest.useRealTimers();
     })
 
@@ -185,6 +186,7 @@ describe("Firepad", () => {
     });
 
     afterAll(() => {
+      jest.clearAllTimers();
       jest.useRealTimers();
     })
 
