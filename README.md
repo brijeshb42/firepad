@@ -37,7 +37,7 @@ So it was about time, that same would happen to Firepad, and we just pulled the 
 Firepad takes two dependencies, one **Database Adapter** and one **Editor Adapter**, with a custom configuration object like the following:
 
 ```ts
-import Firepad from "@hackerrank/firepad";
+import Firepad, { IDatabaseAdapter, IEditorAdapter, IFirepadConstructorOptions } from "@hackerrank/firepad";
 
 const databaseAdapter: IDatabaseAdapter = ...; // Database Adapter instance
 
@@ -45,13 +45,13 @@ const editorAdapter: IEditorAdapter = ...; // Editor Adapter instance
 
 const options: IFirepadConstructorOptions = {
    /** Unique Identifier for current User */
-  userId: ...; // string or number
+  userId: ..., // string or number
   /** Unique Hexadecimal color code for current User */
-  userColor: ...; // string
+  userColor: ..., // string
   /** Name/Short Name of the current User (optional) */
-  userName: ...; // string
+  userName: ..., // string
   /** Default content of Firepad (optional) */
-  defaultText: ...; // string
+  defaultText: ..., // string
 };
 
 const firepad = new Firepad(databaseAdapter, editorAdapter, options);
