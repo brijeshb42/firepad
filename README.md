@@ -1,20 +1,22 @@
 # Firepad
 
-![Deployment](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml/badge.svg)
-![Build](https://img.shields.io/github/workflow/status/interviewstreet/firepad-x/npm-deploy/master?label=master)
-![Node Version](https://img.shields.io/node/v/@hackerrank/firepad)
-![Version](https://img.shields.io/npm/v/@hackerrank/firepad?label=stable&color=%2300)
-![Beta Version](https://img.shields.io/npm/v/@hackerrank/firepad/beta?label=beta)
-![Weekly Downloads](https://img.shields.io/npm/dw/@hackerrank/firepad)
-![Types](https://img.shields.io/npm/types/@hackerrank/firepad)
-![License](https://img.shields.io/npm/l/@hackerrank/firepad)
-![Open Issues](https://img.shields.io/github/issues-raw/interviewstreet/firepad-x)
-![Closed Issues](https://img.shields.io/github/issues-closed-raw/interviewstreet/firepad-x)
-![Open Pulls](https://img.shields.io/github/issues-pr-raw/interviewstreet/firepad-x)
-![Closed Pulls](https://img.shields.io/github/issues-pr-closed-raw/interviewstreet/firepad-x)
-![TKLOC](https://img.shields.io/tokei/lines/github/interviewstreet/firepad-x)
-![Contributors](https://img.shields.io/github/contributors/interviewstreet/firepad-x)
-![Activity](https://img.shields.io/github/last-commit/interviewstreet/firepad-x?label=most%20recent%20activity)
+[![Deployment](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml/badge.svg)](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml)
+[![Build](https://img.shields.io/github/workflow/status/interviewstreet/firepad-x/npm-deploy/master?label=master)](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml)
+[![Node Version](https://img.shields.io/node/v/@hackerrank/firepad)](https://nodejs.org)
+[![Version](https://img.shields.io/npm/v/@hackerrank/firepad?label=stable&color=%2300)](https://www.npmjs.com/package/@hackerrank/firepad)
+[![Beta Version](https://img.shields.io/npm/v/@hackerrank/firepad/beta?label=beta)](https://www.npmjs.com/package/@hackerrank/firepad)
+[![Weekly Downloads](https://img.shields.io/npm/dw/@hackerrank/firepad)](https://www.npmjs.com/package/@hackerrank/firepad)
+[![Built With](https://img.shields.io/badge/built%20with-webpack-green)](https://webpack.js.org)
+[![Tested With](https://img.shields.io/badge/tested%20with-jest-yellowgreen)](https://jestjs.io)
+[![Types](https://img.shields.io/npm/types/@hackerrank/firepad)](https://www.typescriptlang.org)
+[![License](https://img.shields.io/npm/l/@hackerrank/firepad)](LICENSE)
+[![Open Issues](https://img.shields.io/github/issues-raw/interviewstreet/firepad-x)](https://github.com/interviewstreet/firepad-x/issues)
+[![Closed Issues](https://img.shields.io/github/issues-closed-raw/interviewstreet/firepad-x)](https://github.com/interviewstreet/firepad-x/issues?q=is%3Aissue+is%3Aclosed)
+[![Open Pulls](https://img.shields.io/github/issues-pr-raw/interviewstreet/firepad-x)](https://github.com/interviewstreet/firepad-x/pulls)
+[![Closed Pulls](https://img.shields.io/github/issues-pr-closed-raw/interviewstreet/firepad-x)](https://github.com/interviewstreet/firepad-x/pulls?q=is%3Apr+is%3Aclosed)
+[![TKLOC](https://img.shields.io/tokei/lines/github/interviewstreet/firepad-x)](https://github.com/interviewstreet/firepad-x)
+[![Contributors](https://img.shields.io/github/contributors/interviewstreet/firepad-x)](https://github.com/interviewstreet/firepad-x/graphs/contributors)
+[![Activity](https://img.shields.io/github/last-commit/interviewstreet/firepad-x?label=most%20recent%20activity)](https://github.com/interviewstreet/firepad-x/pulse)
 
 ## History
 
@@ -26,7 +28,7 @@ At first it started out with only CodeMirror editor with Rich Text support using
 
 Over the time, with more editor support the codebase got quite convoluted. And every new commit would increase cognitive complexity exponentially, making it harder for the next person to debug any issue. Also keep in mind, the library was designed when JavaScript language itself was quite in early phase.
 
-In recent years, we have seen web editor and IDE domain being dominated by [Monaco](https://github.com/Microsoft/monaco-editor) editor from _Microsoft™_ and [Theia](https://github.com/eclipse-theia/theia) from _Eclipse Foundation_ respectively. Both of these products are written in [TypeScript](https://www.typescriptlang.org/), a modern type-safe language with superset features of JavaScript, with proper engineering and architecture in place.
+In recent years, we have seen web editor and IDE domain being dominated by [Monaco](https://github.com/Microsoft/monaco-editor) editor from _Microsoft™_ and [Theia](https://github.com/eclipse-theia/theia) from _Eclipse Foundation_ respectively. Both of these products are written in [TypeScript](https://www.typescriptlang.org), a modern type-safe language with superset features of JavaScript, with proper engineering and architecture in place.
 
 So it was about time, that same would happen to Firepad, and we just pulled the plug. We have rewritten all the modules and few extras using TypeScript while enhancing earlier implemented [Adapter Pattern](https://en.wikipedia.org/wiki/Adapter_pattern) to integrate with external modules, such as Database _(preferably Firebase)_ and editors _(as of now only Monaco is supported, but PRs are welcomed)_. In this process, we have also made few minor improvments to scale at performance _(e.g., [Treeshaking](https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking))_ and ease of usage while keeping internal modules safe.
 
@@ -89,15 +91,15 @@ Similar thing can be done for Database as well by implementing `IDatabaseAdapter
 
 We have used `yarn` as our package manager through out the project.
 
-We use `webpack-dev-server` for local development environment and `webpack` for bundling. After installing all the dependencies including all the devDependencies, just do `yarn start` to kickoff development server. By default, the dev server opens in `localhost:9000` but this can be configured by passing additional `--port` argument to the start command.
+We use [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) for local development environment and [`webpack`](https://webpack.js.org/api/) for bundling. After installing all the dependencies including all the devDependencies, just do `yarn start` to kickoff development server. By default, the dev server opens in `localhost:9000` but this can be configured by passing additional `--port` argument to the start command.
 
-We use `jest` as both test runner and test suite to write unit tests. Doing `yarn test` should run all the testcases and publish coverage report.
+We use [`jest`](https://jestjs.io/docs) as both test runner and test suite to write unit tests. Doing `yarn test` should run all the testcases and publish coverage report.
 
 ### Directories
 
-1. `examples` - All the working examples are kept and used for manual testing during development.
-2. `src` - Source directory for all the modules.
-3. `test` - Specs directory for all the modules.
+1. [`examples`](examples) - All the working examples are kept and used for manual testing during development.
+2. [`src`](src) - Source directory for all the modules.
+3. [`test`](test) - Specs directory for all the modules.
 
 ## Changelog
 
