@@ -68,7 +68,7 @@ export class UndoManager implements IUndoManager {
   /**
    * Default value `(50)` for maximum number of operation to hold in Undo/Redo stack
    */
-  private static readonly MAX_ITEM_IN_STACK: number = 50;
+  protected static readonly MAX_ITEM_IN_STACK: number = 50;
 
   /**
    * Creates an Undo/Redo Stack manager

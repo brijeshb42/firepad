@@ -1,3 +1,4 @@
+import firebase from "firebase/app";
 import { ICursor } from "../../src/cursor";
 import {
   DatabaseAdapterCallbackType,
@@ -25,13 +26,18 @@ type DatabaseAdapterConfigType = {
   userColor: string,
 };
 
+let databaseRef: string | firebase.database.Reference;
 let user: DatabaseAdapterConfigType;
 
 const emitter: IEventEmitter = new EventEmitter();
 
 export interface IDatabaseAdapterMock extends Partial<IDatabaseAdapter> {
+  /** Trigger an event to lest event listeners */
   trigger(event: DatabaseAdapterEvent, ...eventAttributes: any[]): void;
+  /** Get current User object attached to the adapter */
   getUser(): DatabaseAdapterConfigType;
+  /** Get Database Reference attached to the adapter */
+  getDatabaseRef(): string | firebase.database.Reference;
 }
 
 const databaseAdapter: IDatabaseAdapterMock = Object.freeze({
@@ -77,6 +83,7 @@ const databaseAdapter: IDatabaseAdapterMock = Object.freeze({
     user.userName = name;
   }),
   getUser: jest.fn<DatabaseAdapterConfigType, []>(() => user),
+  getDatabaseRef: jest.fn<string | firebase.database.Reference, []>(() => databaseRef),
 });
 
 afterEach(() => {
@@ -92,11 +99,12 @@ afterAll(() => {
  * Returns a mock implementation of IDatabaseAdapter interface.
  * Useful for testing Editor Client, Firepad and related helper functions.
  */
-export function getDatabaseAdapter(userConfig: DatabaseAdapterConfigType = {
+export function getDatabaseAdapter(ref: string | firebase.database.Reference = ".root", userConfig: DatabaseAdapterConfigType = {
   userId: "user",
   userName: "User",
   userColor: "#ff00f3",
 }): IDatabaseAdapterMock {
-  user = userConfig;
+  databaseRef ||= ref;
+  user ||= userConfig;
   return databaseAdapter;
 }

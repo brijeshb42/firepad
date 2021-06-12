@@ -23,13 +23,18 @@ Utils.validateFalse(
 const emitter: IEventEmitter = new EventEmitter();
 
 export interface IEditorAdapterMock extends Partial<IEditorAdapter> {
+  /** Trigger an event to lest event listeners */
   trigger(event: EditorAdapterEvent, ...eventAttributes: any[]): void;
+  /** Disposes cursor inside editor Adapter */
   disposeCursor(): void;
+  /** Returns original editor instance */
+  getEditor(): any;
 }
 
 const disposeRemoteCursorStub = jest.fn<void, []>();
 let currentCursor: ICursor | null = null;
 let content: string = "";
+let editorInstance: any;
 
 const editorAdapter: IEditorAdapterMock = Object.freeze({
   on: jest.fn<
@@ -76,6 +81,7 @@ const editorAdapter: IEditorAdapterMock = Object.freeze({
     dispose: disposeRemoteCursorStub,
   })),
   disposeCursor: disposeRemoteCursorStub,
+  getEditor: jest.fn<any, []>(() => editorInstance),
   getText: jest.fn<string, []>(() => content),
   setText: jest.fn<void, [string]>((text) => {
     content = text;
@@ -122,6 +128,10 @@ afterAll(() => {
  * Returns a mock implementation of IEditorAdapter interface.
  * Useful for testing Editor Client, Firepad and related helper functions.
  */
-export function getEditorAdapter(): IEditorAdapterMock {
+export function getEditorAdapter(editor: any = null): IEditorAdapterMock {
+  if (!editorInstance) {
+    editorInstance = editor;
+  }
+
   return editorAdapter;
 }

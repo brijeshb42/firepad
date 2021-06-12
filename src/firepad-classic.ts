@@ -19,7 +19,6 @@ import { FirebaseAdapter } from "./firebase-adapter";
 import {
   FirepadEvent as FirepadClassicEvent,
   IFirepad,
-  IFirepadEvent as IFirepadClassicEvent,
 } from "./firepad";
 import { MonacoAdapter } from "./monaco-adapter";
 import * as Utils from "./utils";
@@ -94,20 +93,12 @@ export default class FirepadClassic implements IFirepad {
       FirepadClassicEvent.Synced,
       FirepadClassicEvent.Undo,
       FirepadClassicEvent.Redo,
-      FirepadClassicEvent.CursorChange,
     ]);
 
     this.init();
   }
 
   protected init(): void {
-    this._databaseAdapter.on(
-      DatabaseAdapterEvent.CursorChange,
-      (userId: UserIDType | IDatabaseAdapterEvent) => {
-        this._trigger(FirepadClassicEvent.CursorChange, userId);
-      }
-    );
-
     this._databaseAdapter.on(DatabaseAdapterEvent.Ready, () => {
       this._ready = true;
 
@@ -156,21 +147,21 @@ export default class FirepadClassic implements IFirepad {
 
   on(
     event: FirepadClassicEvent,
-    listener: EventListenerType<IFirepadClassicEvent>
+    listener: EventListenerType<any>
   ): void {
     return this._emitter?.on(event, listener);
   }
 
   off(
     event: FirepadClassicEvent,
-    listener: EventListenerType<IFirepadClassicEvent>
+    listener: EventListenerType<any>
   ): void {
     return this._emitter?.off(event, listener);
   }
 
   protected _trigger(
     event: FirepadClassicEvent,
-    eventAttr: IFirepadClassicEvent,
+    eventAttr: any,
     ...extraArgs: any[]
   ): void {
     return this._emitter?.trigger(event, eventAttr, ...extraArgs);

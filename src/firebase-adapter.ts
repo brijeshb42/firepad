@@ -97,7 +97,7 @@ export class FirebaseAdapter implements IDatabaseAdapter {
   protected _firebaseCallbacks: FirebaseRefCallbackHookType[];
 
   /** Frequency of Text Operation to mark as checkpoint */
-  static readonly CHECKPOINT_FREQUENCY: number = 100;
+  protected static readonly CHECKPOINT_FREQUENCY: number = 100;
 
   /**
    * Creates a Database adapter for Firebase
