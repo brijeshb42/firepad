@@ -1,9 +1,7 @@
-// Work In Progress
 const path = require("path");
 const webpack = require("webpack");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
-//// TODO: replace with your Firebase project configuration.
 const fbConfig = require("./firebase.json");
 
 module.exports = (env, argv) => {

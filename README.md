@@ -91,7 +91,7 @@ Similar thing can be done for Database as well by implementing `IDatabaseAdapter
 
 We have used `yarn` as our package manager through out the project.
 
-We use [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) for local development environment and [`webpack`](https://webpack.js.org/api/) for bundling. After installing all the dependencies including all the devDependencies, just do `yarn start` to kickoff development server. By default, the dev server opens in `localhost:9000` but this can be configured by passing additional `--port` argument to the start command.
+We use [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) for local development environment and [`webpack`](https://webpack.js.org/api/) for bundling. After installing all the dependencies including all the devDependencies and updating Database (Firebase) configuration, just do `yarn start` to kickoff development server. By default, the dev server opens in `localhost:9000` but this can be configured by passing additional `--port` argument to the start command.
 
 We use [`jest`](https://jestjs.io/docs) as both test runner and test suite to write unit tests. Doing `yarn test` should run all the testcases and publish coverage report.
 

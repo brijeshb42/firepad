@@ -67,23 +67,31 @@ If you'd like to contribute to Firepad, you'll need to do the following to get y
 
 ```bash
 $ git clone https://github.com/interviewstreet/firepad-x.git
-$ cd firepad                # go to the firepad directory
+$ cd firepad                                                  # go to the firepad directory
 
-$ npm install -g yarn       # install yarn globally
+$ npm install -g yarn                                         # install yarn globally
 
-$ yarn                      # install local npm build / test dependencies
+$ yarn                                                        # install local npm build / test dependencies
+```
 
-$ yarn start                # start webpack server
+### Start Dev Server
+
+```bash
+$ cp configs/firebase.sample.json configs/firebase.json       # copy dummy config file
+
+$ vi configs/firebase.json                                    # update configuration
+
+$ yarn start                                                  # start webpack server
 ```
 
 ### Lint, Build, and Test
 
 ```bash
-$ yarn lint                 # run prettier
+$ yarn lint                                                   # run prettier
 
-$ yarn test                 # run jest test suites
+$ yarn test                                                   # run jest test suites
 
-$ yarn build                # produces output bundles
+$ yarn build                                                  # produces output bundles
 ```
 
 ### Output Directories
