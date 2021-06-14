@@ -290,6 +290,7 @@ export class EditorClient implements IEditorClient {
     this._editorAdapter.applyOperation(operation);
     this._updateCursor();
     this._undoManager.transform(new WrappedOperation(operation));
+    this._emitSynced();
   }
 
   protected _sendCursor(cursor: ICursor | null) {
