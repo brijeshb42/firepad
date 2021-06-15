@@ -2,6 +2,8 @@
 
 [![Deployment](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml/badge.svg)](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml)
 [![Build](https://img.shields.io/github/workflow/status/interviewstreet/firepad-x/npm-deploy/master?label=master)](https://github.com/interviewstreet/firepad-x/actions/workflows/npm-deploy.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/51c4461053acc08843c1/maintainability)](https://codeclimate.com/repos/60c767da4bc0db009c002af4/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/51c4461053acc08843c1/test_coverage)](https://codeclimate.com/repos/60c767da4bc0db009c002af4/test_coverage)
 [![Node Version](https://img.shields.io/node/v/@hackerrank/firepad)](https://nodejs.org)
 [![Version](https://img.shields.io/npm/v/@hackerrank/firepad?label=stable&color=%2300)](https://www.npmjs.com/package/@hackerrank/firepad)
 [![Beta Version](https://img.shields.io/npm/v/@hackerrank/firepad/beta?label=beta)](https://www.npmjs.com/package/@hackerrank/firepad)
