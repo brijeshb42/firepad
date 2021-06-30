@@ -1,9 +1,17 @@
-import * as monaco from "monaco-editor";
 import * as firebase from "firebase/app";
 import "firebase/database";
 
 import * as Firepad from "../src";
 import { getExampleRef } from "./test-utils";
+
+// Ace constructor will be available in global scope
+declare global {
+  interface Window {
+    ace: AceAjax.Ace;
+  }
+}
+
+declare var window: Window;
 
 const init = function (): void {
   // Initialize Firebase.
@@ -12,16 +20,15 @@ const init = function (): void {
   // Get Firebase Database reference.
   const firepadRef = getExampleRef();
 
-  // Create Monaco and firepad.
-  const editor = monaco.editor.create(document.getElementById("firepad"), {
-    language: "typescript",
-    fontSize: 18,
-    theme: "vs-dark",
-    // @ts-ignore
-    trimAutoWhitespace: false,
-  });
+  // Create Ace and firepad.
+  const editor = window.ace.edit("firepad");
+  const session = editor.getSession();
+  editor.setTheme("ace/theme/textmate");
+  session.setUseWrapMode(true);
+  session.setUseWorker(false);
+  session.setMode("ace/mode/typescript");
 
-  const firepad = Firepad.fromMonaco(firepadRef, editor, {
+  const firepad = Firepad.fromAce(firepadRef, editor, {
     userName: `Anonymous ${Math.floor(Math.random() * 100)}`,
     defaultText: `// typescript Editing with Firepad!
 function go() {
@@ -33,10 +40,6 @@ function go() {
 
   window["firepad"] = firepad;
   window["editor"] = editor;
-
-  window.addEventListener("resize", function () {
-    editor.layout();
-  });
 };
 
 // Initialize the editor in non-blocking way
@@ -55,7 +58,7 @@ if (module.hot) {
     const Firepad = require("../src/index.ts");
 
     // Get Editor and Firepad instance
-    const editor: monaco.editor.IStandaloneCodeEditor = window["editor"];
+    const editor: AceAjax.Editor = window["editor"];
     const firepad: Firepad.Firepad = window["firepad"];
 
     // Get Constructor Options
@@ -67,7 +70,7 @@ if (module.hot) {
     firepad.dispose();
 
     // Create new connection
-    window["firepad"] = Firepad.fromMonaco(firepadRef, editor, {
+    window["firepad"] = Firepad.fromAce(firepadRef, editor, {
       userId,
       userName,
     });

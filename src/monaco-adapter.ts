@@ -35,6 +35,7 @@ export class MonacoAdapter implements IEditorAdapter {
   protected readonly _remoteCursors: Map<ClientIDType, IRemoteCursor>;
   protected readonly _cursorWidgetController: ICursorWidgetController;
 
+  protected _initiated: boolean;
   protected _ignoreChanges: boolean;
   protected _lastDocLines: string[];
   protected _lastCursorRange: monaco.Selection | null;
@@ -43,10 +44,9 @@ export class MonacoAdapter implements IEditorAdapter {
   protected _redoCallback: UndoRedoCallbackType | null;
   protected _originalUndo: UndoRedoCallbackType | null;
   protected _originalRedo: UndoRedoCallbackType | null;
-  protected _initiated: boolean;
 
   /**
-   * Wraps a monaco editor in adapter to work with rest of Firepad
+   * Wraps a Monaco editor in adapter to work with rest of Firepad
    * @param monacoInstance - Monaco Standalone Code Editor instance
    * @param avoidListeners - Whether or not propagate changes from editor (optional, defaults to `True`)
    */
@@ -62,6 +62,7 @@ export class MonacoAdapter implements IEditorAdapter {
     this._remoteCursors = new Map<ClientIDType, IRemoteCursor>();
     this._cursorWidgetController = new CursorWidgetController(this._monaco);
 
+    this._initiated = false;
     this._redoCallback = null;
     this._undoCallback = null;
     this._originalRedo = null;

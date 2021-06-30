@@ -1483,6 +1483,11 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
+"@types/ace@0.0.46":
+  version "0.0.46"
+  resolved "https://registry.yarnpkg.com/@types/ace/-/ace-0.0.46.tgz#bcd6679c290d518e0793186cc16abf68ad80d098"
+  integrity sha512-h87yRMl0RvV6lmstOnZ8b7M0JHOZBLp+HsYV/sadsKkq5NLlZXzDdldQh8k42CCewQdv+Wo76tO9maR2sJf4/g==
+
 "@types/anymatch@*":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
