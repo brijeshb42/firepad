@@ -142,6 +142,14 @@ export class UndoManager implements IUndoManager {
       default:
         break;
     }
+    console.log(
+      "🚀 ~ file: undo-manager.ts ~ line 143 ~ UndoManager ~ add ~ this._undoStack",
+      this._undoStack
+    );
+    console.log(
+      "🚀 ~ file: undo-manager.ts ~ line 143 ~ UndoManager ~ add ~ this._redoStack",
+      this._redoStack
+    );
   }
 
   last(): ITextOperation | null {
